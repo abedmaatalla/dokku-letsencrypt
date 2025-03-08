@@ -132,7 +132,16 @@ fn-lentsencrypt-enable() {
   dokku_log_info2 "Enabling letsencrypt for $APP"
 
   # dynamically choose a port for the letsencrypt standalone authenticator
-  acme_port=$(get_available_port)
+  challenge_mode="HTTP-01"
+  dns_provider="$(fn-letsencrypt-computed-dns-provider "$APP")"
+  if [[ -n "$dns_provider" ]]; then
+    challenge_mode="DNS-01"
+  fi
+  dokku_log_info1 "Revoking letsencrypt certificate for ${APP} via ${challenge_mode}"
+  local acme_port="$(plugn trigger ports-get-available)"
+  if [[ -z "$acme_port" ]]; then
+    acme_port="$(get_available_port)"
+  fi
 
   letsencrypt_check_email "$APP"
 

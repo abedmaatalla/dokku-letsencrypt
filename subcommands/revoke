@@ -11,7 +11,16 @@ letsencrypt_acme_revoke() {
   letsencrypt_create_root "$app"
 
   dokku_log_info1 "Revoking letsencrypt certificate for ${app}..."
-  local acme_port=$(get_available_port)
+  challenge_mode="HTTP-01"
+  dns_provider="$(fn-letsencrypt-computed-dns-provider "$APP")"
+  if [[ -n "$dns_provider" ]]; then
+    challenge_mode="DNS-01"
+  fi
+  dokku_log_info1 "Revoking letsencrypt certificate for ${APP} via ${challenge_mode}"
+  local acme_port="$(plugn trigger ports-get-available)"
+  if [[ -z "$acme_port" ]]; then
+    acme_port="$(get_available_port)"
+  fi
 
   # read arguments from appropriate config file into the config array
   local config_dir=$(letsencrypt_configure_and_get_dir "$app" "$acme_port")
