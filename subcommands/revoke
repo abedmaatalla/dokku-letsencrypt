@@ -1,8 +1,21 @@
 #!/usr/bin/env bash
 source "$PLUGIN_AVAILABLE_PATH/letsencrypt/command-functions"
-source "$PLUGIN_CORE_AVAILABLE_PATH/common/functions"
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
+
+letsencrypt_check_email() {
+  #shellcheck disable=SC2034
+  declare desc="Check if an e-mail address is provided globally or for the app"
+  declare APP="$1"
+
+  # check we have a valid e-mail address
+  if [[ -z "$(letsencrypt_get_email "$APP")" ]]; then
+    dokku_log_warn "ERROR: Cannot request a certificate without an e-mail address!"
+    dokku_log_warn "  please provide your e-mail address using"
+    dokku_log_warn "  dokku config:set --no-restart $APP DOKKU_LETSENCRYPT_EMAIL=<e-mail>"
+    return 1
+  fi
+}
 
 letsencrypt_acme_revoke() {
   #shellcheck disable=SC2034
