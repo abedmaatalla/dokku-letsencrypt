@@ -3,6 +3,21 @@ source "$PLUGIN_AVAILABLE_PATH/letsencrypt/command-functions"
 set -eo pipefail
 [[ $DOKKU_TRACE ]] && set -x
 
+letsencrypt_get_email() {
+  #shellcheck disable=SC2034
+  declare desc="Check if an e-mail address is provided globally or for the app"
+  declare APP="$1"
+
+  eval "$(config_export global)"
+  if [[ -n "$DOKKU_LETSENCRYPT_EMAIL" ]]; then
+    echo "$DOKKU_LETSENCRYPT_EMAIL"
+    return
+  fi
+
+  eval "$(config_export app "$APP")"
+  echo "$DOKKU_LETSENCRYPT_EMAIL"
+}
+
 letsencrypt_check_email() {
   #shellcheck disable=SC2034
   declare desc="Check if an e-mail address is provided globally or for the app"
