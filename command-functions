@@ -293,7 +293,7 @@ cmd-letsencrypt-set() {
   declare cmd="letsencrypt:set"
   [[ "$1" == "$cmd" ]] && shift 1
   declare APP="$1" KEY="$2" VALUE="$3"
-  local VALID_KEYS=("dns-provider" "email" "graceperiod" "server" "lego-docker-args" "PERMISSIONS_CALLS")
+  local VALID_KEYS=("dns-provider" "email" "graceperiod" "server" "lego-docker-args")
   [[ "$APP" == "--global" ]] || verify_app_name "$APP"
 
   [[ -z "$KEY" ]] && dokku_log_fail "No key specified"
