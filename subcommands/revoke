@@ -62,7 +62,7 @@ letsencrypt_acme_revoke() {
   set +e
   export DOKKU_UID=$(id -u)
   export DOKKU_GID=$(id -g)
-
+  export PERMISSIONS_CALLS=$(plugn trigger config-get-global "PERMISSIONS_CALLS")
   docker run --rm \
     "$PERMISSIONS_CALLS" \
     --user $DOKKU_UID:$DOKKU_GID \
